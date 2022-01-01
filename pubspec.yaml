@@ -1,5 +1,5 @@
 name: wings
-description: This is a structure for flutter developers developed by Invention Technology developers
+description: This is a structure for flutter developers developed by Invention Technology.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -30,9 +30,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   get: ^4.6.1
   dio: ^4.0.4
