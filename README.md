@@ -40,7 +40,7 @@ Wings is an MVC file structure build with [getx](https://github.com/jonataslaw/g
 
 clone the project to your device 
 
-`git clone https://github.com/jonataslaw/getx.git`
+`git clone https://github.com/Invention-Technology/Flutter-Wings.git`
 
 go to the project directory and run `flutter pub get` to install all the dependencies 
 
