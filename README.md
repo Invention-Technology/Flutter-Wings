@@ -2,8 +2,8 @@
 
 - [About Wings](#about-wings)
 - [installation](#installation)
-- [simple use](#Simple Use)
-- [Advance Use](#Advance Use)
+- [simple use](#Simple-Use)
+- [Advance Use](#Advance-Use)
 
 # About Wings
 
