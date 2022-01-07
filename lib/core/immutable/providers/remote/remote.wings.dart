@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -77,7 +78,7 @@ class Remote {
 
       if (WingsResponseFormat.key != null &&
           WingsResponseFormat.key!.isNotEmpty) {
-        return response.data[WingsResponseFormat.key];
+        return jsonDecode(response.data)[WingsResponseFormat.key];
       }
 
       return response.data;

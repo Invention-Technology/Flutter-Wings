@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import '../../../mutable/stores/store.wings.dart';
 import '../../main.wings.dart';
 import '../../providers/main.provider.wings.dart';
 import '../../providers/remote/request.wings.dart';
@@ -18,6 +19,9 @@ class WingsWatcher extends SuperController {
 
   /// The state of the widget
   var currentState = WingsState.initial().obs;
+
+  /// call to WingsStore to use it globally
+  WingsStore get store => WingsStore.instance;
 
   /// The controller that this watcher called from to call the controller-specific data
   late dynamic controller;
