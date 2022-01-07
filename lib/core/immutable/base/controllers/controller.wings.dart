@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import '../../../mutable/stores/store.wings.dart';
 import '../../base/models/model.wings.dart';
 import '../../main.wings.dart';
 import '../../providers/errors/error.model.wings.dart';
@@ -19,6 +20,9 @@ class WingsController extends SuperController {
 
   /// The state of the widget
   var currentState = WingsState.initial().obs;
+
+  /// call to WingsStore to use it globally
+  WingsStore get store => WingsStore.instance;
 
   /// This variable will contain the response data so it can be called from WingsView
   late dynamic data;
