@@ -29,7 +29,7 @@ class WingsRequest {
         query += '$key=$value&';
       });
 
-      query = query.substring(0, queryString.length - 1);
+      query = query.substring(0, query.length - 1);
     }
 
     return query;
