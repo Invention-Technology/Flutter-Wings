@@ -8,6 +8,8 @@ import 'package:wings/core/immutable/translations/language.wings.dart';
 import 'base/views/view.wings.dart';
 import 'providers/main.provider.wings.dart';
 
+part 'main/navigating.wings.dart';
+
 class Wings {
   static Wings? _instance;
 
@@ -34,19 +36,15 @@ class Wings {
   static WingsLanguageController get language =>
       WingsLanguageController.instance;
 
-  static void push(WingsView page, {dynamic args}) async {
-    for (var middleware in page.middlewares) {
-      dynamic boot = await middleware.boot();
-      if (boot != true) {
-        log((boot is WingsView).toString());
-        if (boot is WingsView) {
-          return Get.to(() => boot);
-        } else {
-          return;
-        }
-      }
-    }
+  static void push(WingsView page, {dynamic args}) {
+    _push(page, args: args);
+  }
 
-    Get.to(() => page, arguments: args);
+  static void pushReplace(WingsView page, {dynamic args}) {
+    _pushReplace(page, args: args);
+  }
+
+  static void pushReplaceAll(WingsView page, {dynamic args}) {
+    _pushReplaceAll(page, args: args);
   }
 }
