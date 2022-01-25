@@ -1,11 +1,11 @@
 import 'package:wings/core/immutable/base/models/model.wings.dart';
 
-class DetialModel extends WingsModel {
+class DetailsModel extends WingsModel {
   dynamic id;
   dynamic title;
   dynamic body;
 
-  DetialModel({
+  DetailsModel({
     this.id,
     this.title,
     this.body,
@@ -13,10 +13,10 @@ class DetialModel extends WingsModel {
 
   @override
   List<WingsModel> fromJsonList(List<dynamic> json) {
-    List<DetialModel> models = [];
+    List<DetailsModel> models = [];
 
     for (var element in json) {
-      models.add(DetialModel.fromJson(element));
+      models.add(DetailsModel.fromJson(element));
     }
 
     return models;
@@ -24,11 +24,11 @@ class DetialModel extends WingsModel {
 
   @override
   WingsModel fromJson(Map<String, dynamic> json) {
-    return DetialModel.fromJson(json);
+    return DetailsModel.fromJson(json);
   }
 
-  factory DetialModel.fromJson(Map<String, dynamic> json) {
-    return DetialModel(
+  factory DetailsModel.fromJson(Map<String, dynamic> json) {
+    return DetailsModel(
         id: json['id'], title: json['title'], body: json['body']);
   }
 }

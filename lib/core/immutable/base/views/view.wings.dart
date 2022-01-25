@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wings/core/immutable/base/middlewares/middleware.wings.dart';
 
 import '../../../mutable/widgets/default_appbar.widget.wings.dart';
 import '../../../mutable/widgets/states/app_state.static.wings.dart';
@@ -16,6 +17,8 @@ class WingsView<T> extends StatelessWidget {
   }
 
   T get controller => _controller.child;
+
+  List<WingsMiddleware> get middlewares => _controller.middlewares;
 
   WingsModel get model => _controller.model!;
 

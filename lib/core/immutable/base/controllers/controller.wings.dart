@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:wings/core/immutable/base/middlewares/middleware.wings.dart';
 
 import '../../../mutable/stores/store.wings.dart';
 import '../../base/models/model.wings.dart';
@@ -11,7 +12,13 @@ import '../../providers/remote/request.wings.dart';
 import '../../states/state.wings.dart';
 
 class WingsController extends SuperController {
+  WingsController() {
+    fillMiddlewares();
+  }
+
   DataProvider get provider => Wings.provider;
+
+  List<WingsMiddleware> middlewares = [];
 
   /// The model that the API data came to
   WingsModel? model;
@@ -139,5 +146,9 @@ class WingsController extends SuperController {
       image: image!,
       icon: icon!,
     );
+  }
+
+  void fillMiddlewares() {
+    middlewares = [];
   }
 }

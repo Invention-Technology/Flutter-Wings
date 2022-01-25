@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:wings/core/immutable/base/views/view.wings.dart';
-import 'package:wings/features/detail/controller/index.controller.dart';
+import 'package:wings/features/detail/controller/details.controller.dart';
 
-class DetailView extends WingsView {
-  DetailView({Key? key}) : super(key: key, controller: DetailController());
+class DetailsView extends WingsView<DetailsController> {
+  DetailsView({Key? key}) : super(key: key, controller: DetailsController());
 
   @override
   PreferredSizeWidget? pageAppBar(BuildContext context) {
     return AppBar(
-      title: Text("Error:ServerException".tr),
+      title: const Text('details'),
     );
   }
 
