@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:wings/core/immutable/base/views/view.wings.dart';
 import 'package:wings/core/immutable/main.wings.dart';
 import 'package:wings/features/detail/view/details.view.dart';
@@ -28,8 +27,8 @@ class IndexView extends WingsView<IndexController> {
                 //   'id': controller.posts[index].id,
                 // });
                 Wings.push(DetailsView(), args: {
-                    'id': controller.posts[index].id,
-                  });
+                  'id': controller.posts[index].id,
+                });
               },
               title: Text(
                 controller.posts[index].title,

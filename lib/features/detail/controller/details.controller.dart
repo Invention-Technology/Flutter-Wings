@@ -17,7 +17,5 @@ class DetailsController extends WingsController {
     );
 
     await getData();
-
-    super.onReady();
   }
 }

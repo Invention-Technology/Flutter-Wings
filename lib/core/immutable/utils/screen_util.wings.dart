@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
+import '../main.wings.dart';
 
 class ScreenUtil {
   static ScreenUtil? _instance;
@@ -38,7 +39,7 @@ class ScreenUtil {
   }
 
   void _init() {
-    MediaQueryData mediaQuery = Get.mediaQuery;
+    MediaQueryData mediaQuery = MediaQuery.of(Wings.context);
     _mediaQueryData = mediaQuery;
     _pixelRatio = mediaQuery.devicePixelRatio;
     _screenWidth = mediaQuery.size.width;

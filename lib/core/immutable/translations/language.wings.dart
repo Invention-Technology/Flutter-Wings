@@ -3,12 +3,13 @@ import 'dart:ui';
 import '../base/models/model.wings.dart';
 
 class WingsLanguage extends WingsModel {
+  static const defaultTextDirection = TextDirection.rtl;
   TextDirection textDirection;
   Locale locale;
 
   WingsLanguage({
     this.locale = const Locale('ar', 'ye'),
-    this.textDirection = TextDirection.rtl,
+    this.textDirection = defaultTextDirection,
   });
 
   factory WingsLanguage.fromJson(Map<String, dynamic> json) {

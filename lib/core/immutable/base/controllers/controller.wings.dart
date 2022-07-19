@@ -1,5 +1,7 @@
-import 'package:get/get.dart';
+import 'dart:developer';
+
 import 'package:wings/core/immutable/base/middlewares/middleware.wings.dart';
+import 'package:wings/core/immutable/binding/reactive.binding.dart';
 
 import '../../../mutable/stores/store.wings.dart';
 import '../../base/models/model.wings.dart';
@@ -11,9 +13,18 @@ import '../../providers/main.provider.wings.dart';
 import '../../providers/remote/request.wings.dart';
 import '../../states/state.wings.dart';
 
-class WingsController extends SuperController {
+class WingsController {
   WingsController() {
     fillMiddlewares();
+    onInit();
+  }
+
+  static WingsController? _instance;
+
+  static WingsController get instance {
+    _instance ??= WingsController();
+
+    return _instance!;
   }
 
   DataProvider get provider => Wings.provider;
@@ -26,7 +37,7 @@ class WingsController extends SuperController {
   Type get type => model.runtimeType;
 
   /// The state of the widget
-  var currentState = WingsState.initial().obs;
+  var state = WingsState.initial().wis;
 
   /// call to WingsStore to use it globally
   WingsStore get store => WingsStore.instance;
@@ -38,31 +49,24 @@ class WingsController extends SuperController {
 
   WingsRequest request = WingsRequest(url: '');
 
-  @override
   void onInit() async {
     if (request.url.isNotEmpty) {
       await getData();
     }
-
-    super.onInit();
   }
 
-  @override
   void onDetached() {
     // TODO: implement onDetached
   }
 
-  @override
   void onInactive() {
     // TODO: implement onInactive
   }
 
-  @override
   void onPaused() {
     // TODO: implement onPaused
   }
 
-  @override
   void onResumed() {
     // TODO: implement onResumed
   }
@@ -70,12 +74,12 @@ class WingsController extends SuperController {
   Future<void> getData() async {
     if (request.url.isEmpty) return;
 
-    currentState.value = WingsState.loading();
+    state.data = WingsState.loading();
 
     var response = await provider.get(request: request);
 
     if (provider.error.message.isNotEmpty) {
-      currentState.value = WingsState.error(
+      state.data = WingsState.error(
         error: provider.error.exception.runtimeType ==
                 WingsException.fromEnumeration(
                   ExceptionTypes.empty,
@@ -99,8 +103,10 @@ class WingsController extends SuperController {
       data = response;
     }
 
-    Future.delayed(const Duration(milliseconds: 1000),
-        () => currentState.value = WingsState.success());
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      log('done data received');
+      return state.data = WingsState.success();
+    });
   }
 
   Future<dynamic> sendData(
@@ -125,10 +131,10 @@ class WingsController extends SuperController {
     }
 
     if (showFlushBar || flushBarMessage != null) {
-      currentState.value = WingsState.successFlushBar(
+      state.data = WingsState.successFlushBar(
           message: flushBarMessage ?? 'Added Successfully');
     } else {
-      currentState.value = WingsState.success();
+      state.data = WingsState.success();
     }
 
     return temp;
