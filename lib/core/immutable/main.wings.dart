@@ -37,6 +37,9 @@ class Wings {
     if (!instance.controllers.containsKey(tag)) {
       instance.controllers.addAll({tag: controller});
     }
+    else {
+      return instance.controllers[tag];
+    }
 
     log('$tag controller has been created', name: 'Wings');
 
@@ -66,7 +69,7 @@ class Wings {
     textDirection: TextDirection.rtl,
   );
 
-  List<BuildContext> _context = [];
+  final List<BuildContext> _context = [];
 
   Map<String, dynamic> controllers = {};
 
