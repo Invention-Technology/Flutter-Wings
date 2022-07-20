@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:wings/core/immutable/base/middlewares/middleware.wings.dart';
 import 'package:wings/core/immutable/binding/main.bidings.dart';
@@ -35,9 +37,12 @@ class WingsView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Wings.setContext(context);
+    _controller.onReady();
     return WillPopScope(
       onWillPop: () {
-        Wings.remove<T>(tag: _controllerTag);
+        log('onWillPop called', name: 'Remove before publishing');
+        Wings.backToPreviousContext();
+        Wings.remove(_controller, tag: _controllerTag);
 
         return Future.value(true);
       },
@@ -114,4 +119,6 @@ class WingsView<T> extends StatelessWidget {
       width: 0,
     );
   }
+
+
 }

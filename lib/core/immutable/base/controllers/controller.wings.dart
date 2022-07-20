@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:wings/core/immutable/base/middlewares/middleware.wings.dart';
 import 'package:wings/core/immutable/binding/reactive.binding.dart';
 
@@ -29,6 +27,8 @@ class WingsController {
 
   DataProvider get provider => Wings.provider;
 
+  Map<String, dynamic> arguments = {};
+
   List<WingsMiddleware> middlewares = [];
 
   /// The model that the API data came to
@@ -55,20 +55,11 @@ class WingsController {
     }
   }
 
-  void onDetached() {
-    // TODO: implement onDetached
-  }
-
-  void onInactive() {
-    // TODO: implement onInactive
-  }
-
-  void onPaused() {
-    // TODO: implement onPaused
-  }
-
-  void onResumed() {
-    // TODO: implement onResumed
+  void onReady() {
+    if (Wings.arguments.isNotEmpty) {
+      arguments = Wings.arguments;
+      Wings.arguments = {};
+    }
   }
 
   Future<void> getData() async {
@@ -104,7 +95,6 @@ class WingsController {
     }
 
     Future.delayed(const Duration(milliseconds: 1000), () {
-      log('done data received');
       return state.data = WingsState.success();
     });
   }

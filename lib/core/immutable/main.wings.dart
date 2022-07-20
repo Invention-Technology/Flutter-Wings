@@ -1,7 +1,6 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:wings/core/immutable/base/controllers/controller.wings.dart';
 import 'package:wings/core/immutable/translations/lang.controller.wings.dart';
 import 'package:wings/core/immutable/translations/language.wings.dart';
@@ -25,7 +24,7 @@ class Wings {
   static Future<void> init({BuildContext? context}) async {
     _instance ??= Wings();
 
-    instance._context = context;
+    setContext(context!);
 
     await DataProvider.init();
   }
@@ -54,8 +53,8 @@ class Wings {
     }
   }
 
-  static void remove<T>({String? tag}) {
-    tag ??= T.runtimeType.toString();
+  static void remove(WingsController controller, {String? tag}) {
+    tag ??= controller.runtimeType.toString();
 
     instance.controllers.removeWhere((key, value) => key == tag);
 
@@ -67,30 +66,42 @@ class Wings {
     textDirection: TextDirection.rtl,
   );
 
-  BuildContext? _context;
+  List<BuildContext> _context = [];
 
   Map<String, dynamic> controllers = {};
 
-  static BuildContext get context => instance._context!;
+  static BuildContext get context => instance._context.last;
 
   static DataProvider get provider => DataProvider.instance;
 
   static WingsLanguageController get language =>
       WingsLanguageController.instance;
 
-  static void push(WingsView page, {dynamic args}) {
+  static Map<String, dynamic> arguments = {};
+
+  static void push(WingsView page, {Map<String, dynamic> args = const {}}) {
     _push(page, args: args);
   }
 
-  static void pushReplace(WingsView page, {dynamic args}) {
+  static void pushReplace(WingsView page,
+      {Map<String, dynamic> args = const {}}) {
     _pushReplace(page, args: args);
   }
 
-  static void pushReplaceAll(WingsView page, {dynamic args}) {
+  static void pushReplaceAll(WingsView page,
+      {Map<String, dynamic> args = const {}}) {
     _pushReplaceAll(page, args: args);
   }
 
+  static void pop() {
+    _pop();
+  }
+
   static void setContext(BuildContext context) {
-    instance._context = context;
+    instance._context.add(context);
+  }
+
+  static void backToPreviousContext() {
+    instance._context.removeLast();
   }
 }

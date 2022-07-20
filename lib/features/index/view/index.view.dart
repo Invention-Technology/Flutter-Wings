@@ -23,9 +23,6 @@ class IndexView extends WingsView<IndexController> {
           children: [
             ListTile(
               onTap: () {
-                // Get.to(() => DetailView(), arguments: {
-                //   'id': controller.posts[index].id,
-                // });
                 Wings.push(DetailsView(), args: {
                   'id': controller.posts[index].id,
                 });
