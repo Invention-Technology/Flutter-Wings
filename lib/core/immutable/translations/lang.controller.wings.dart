@@ -16,10 +16,6 @@ class WingsLanguageController {
   }
 
   WingsLanguageController() {
-    onInit();
-  }
-
-  void onInit() async {
     currentLanguage = _langService.currentLang;
   }
 

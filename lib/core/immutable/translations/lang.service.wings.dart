@@ -17,6 +17,10 @@ class WingsLanguageService {
     return _instance!;
   }
 
+  WingsLanguageService() {
+    init();
+  }
+
   late WingsLanguage currentLang;
 
   Future<WingsLanguageService> init() async {

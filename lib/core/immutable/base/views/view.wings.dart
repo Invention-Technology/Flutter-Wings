@@ -17,7 +17,7 @@ class WingsView<T> extends StatelessWidget {
 
   WingsView({Key? key, required WingsController controller, String? tag})
       : super(key: key) {
-    _controllerTag = tag;
+    _controllerTag = tag ?? controller.runtimeType.toString();
 
     _controller = Wings.add(controller, tag: tag);
   }
@@ -42,7 +42,7 @@ class WingsView<T> extends StatelessWidget {
       onWillPop: () {
         log('onWillPop called', name: 'Remove before publishing');
         Wings.backToPreviousContext();
-        Wings.remove(_controller, tag: _controllerTag);
+        Wings.remove(tag: _controllerTag);
 
         return Future.value(true);
       },

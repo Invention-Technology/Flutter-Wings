@@ -46,7 +46,7 @@ class _WingsAppState extends State<WingsApp> {
       darkTheme: widget.darkTheme,
       themeMode: widget.themeMode,
       home: widget.home,
-      locale: widget.locale ?? Wings.language.currentLanguage.locale,
+      locale: widget.locale ?? Wings.locale,
     );
   }
 

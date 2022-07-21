@@ -47,7 +47,7 @@ class Wings {
   }
 
   static WingsController? find<T>({String? tag}) {
-    tag ??= T.runtimeType.toString();
+    tag ??= T.toString();
 
     if (instance.controllers.containsKey(tag)) {
       return instance.controllers[tag];
@@ -56,10 +56,12 @@ class Wings {
     }
   }
 
-  static void remove(WingsController controller, {String? tag}) {
-    tag ??= controller.runtimeType.toString();
+  static void remove<T>({String? tag}) {
+    tag ??= T.toString();
 
-    instance.controllers.removeWhere((key, value) => key == tag);
+    if (instance.controllers.containsKey(tag)) {
+      instance.controllers.removeWhere((key, value) => key == tag);
+    }
 
     log('$tag controller has been removed', name: 'Wings');
   }
