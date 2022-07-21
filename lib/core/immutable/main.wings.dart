@@ -82,6 +82,8 @@ class Wings {
 
   static Map<String, dynamic> arguments = {};
 
+  static Locale locale = const Locale('ar', 'YE');
+
   static void push(WingsView page, {Map<String, dynamic> args = const {}}) {
     _push(page, args: args);
   }

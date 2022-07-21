@@ -1,11 +1,9 @@
 import 'dart:ui';
 
-import 'package:get/get.dart';
-
 import 'lang.service.wings.dart';
 import 'language.wings.dart';
 
-class WingsLanguageController extends GetxController {
+class WingsLanguageController {
   WingsLanguageService get _langService => WingsLanguageService.instance;
   WingsLanguage currentLanguage = WingsLanguageService.defaultLang;
 
@@ -17,9 +15,11 @@ class WingsLanguageController extends GetxController {
     return _instance!;
   }
 
-  @override
+  WingsLanguageController() {
+    onInit();
+  }
+
   void onInit() async {
-    super.onInit();
     currentLanguage = _langService.currentLang;
   }
 
@@ -33,9 +33,8 @@ class WingsLanguageController extends GetxController {
       );
     }
 
-    Get.updateLocale(newLang.locale);
     currentLanguage = newLang;
     _langService.write(WingsLanguageService.languageKey, newLang);
-    update();
+    _langService.updateLocale(newLang.locale);
   }
 }

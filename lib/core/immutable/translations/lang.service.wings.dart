@@ -1,11 +1,11 @@
-import 'dart:ui';
+import 'dart:ui' as ui;
 
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
 import '../main.wings.dart';
 import 'language.wings.dart';
 
-class WingsLanguageService extends GetxService {
+class WingsLanguageService {
   static const languageKey = 'APP_LANGUAGE';
   static var defaultLang = Wings.instance.defaultLanguage;
 
@@ -20,7 +20,7 @@ class WingsLanguageService extends GetxService {
   late WingsLanguage currentLang;
 
   Future<WingsLanguageService> init() async {
-    final deviceLocale = Get.deviceLocale; // get the current device language
+    final deviceLocale = ui.window.locale; // get the current device language
     Locale locale = defaultLang.locale;
     TextDirection direction = defaultLang.textDirection;
 
@@ -31,7 +31,7 @@ class WingsLanguageService extends GetxService {
       WingsLanguage language = WingsLanguage.fromJson(appLanguage);
       locale = language.locale;
       direction = language.textDirection;
-    } else if (deviceLocale!.languageCode.toLowerCase() == 'en') {
+    } else if (deviceLocale.languageCode.toLowerCase() == 'en') {
       // if the user didn't change the lang get the device lang
       locale = const Locale('en');
       direction = TextDirection.ltr;
@@ -42,7 +42,7 @@ class WingsLanguageService extends GetxService {
       textDirection: direction,
     );
 
-    Get.updateLocale(currentLang.locale);
+    updateLocale(currentLang.locale);
     return this;
   }
 
@@ -54,5 +54,10 @@ class WingsLanguageService extends GetxService {
   //read the user language from the locale storage
   read(String key) {
     return Wings.provider.local.get(key: key);
+  }
+
+  Future<void> updateLocale(Locale l) async {
+    Wings.locale = l;
+    await WidgetsFlutterBinding.ensureInitialized().performReassemble();
   }
 }
