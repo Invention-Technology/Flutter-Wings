@@ -24,8 +24,6 @@ class Wings {
   static Future<void> init({BuildContext? context}) async {
     _instance ??= Wings();
 
-    setContext(context!);
-
     await DataProvider.init();
   }
 
@@ -71,11 +69,13 @@ class Wings {
     textDirection: TextDirection.rtl,
   );
 
-  final List<BuildContext> _context = [];
-
   Map<String, dynamic> controllers = {};
 
-  static BuildContext get context => instance._context.last;
+  static BuildContext get context => key.currentContext!;
+
+  static GlobalKey<NavigatorState> get key => _key;
+
+  static final GlobalKey<NavigatorState> _key = GlobalKey();
 
   static DataProvider get provider => DataProvider.instance;
 
@@ -102,13 +102,5 @@ class Wings {
 
   static void pop() {
     _pop();
-  }
-
-  static void setContext(BuildContext context) {
-    instance._context.add(context);
-  }
-
-  static void backToPreviousContext() {
-    instance._context.removeLast();
   }
 }

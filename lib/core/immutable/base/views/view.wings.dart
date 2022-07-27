@@ -12,6 +12,7 @@ import '../../utils/screen_util.wings.dart';
 import '../controllers/controller.wings.dart';
 import '../models/model.wings.dart';
 
+// ignore: must_be_immutable
 class WingsView<T> extends StatelessWidget {
   late final WingsController _controller;
 
@@ -36,12 +37,10 @@ class WingsView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Wings.setContext(context);
     _controller.onReady();
     return WillPopScope(
       onWillPop: () {
         log('onWillPop called', name: 'Remove before publishing');
-        Wings.backToPreviousContext();
         Wings.remove(tag: _controllerTag);
 
         return Future.value(true);
