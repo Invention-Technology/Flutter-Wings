@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wings/core/immutable/translations/language.wings.dart';
 
 import 'main.wings.dart';
+import 'translations/language.wings.dart';
 
 class WingsApp extends StatelessWidget {
   final String title;
@@ -39,5 +39,4 @@ class WingsApp extends StatelessWidget {
       locale: locale ?? Wings.locale,
     );
   }
-
 }

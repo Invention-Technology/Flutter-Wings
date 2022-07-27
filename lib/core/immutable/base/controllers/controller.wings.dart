@@ -1,8 +1,6 @@
-import 'package:wings/core/immutable/base/middlewares/middleware.wings.dart';
-import 'package:wings/core/immutable/binding/reactive.binding.dart';
-
 import '../../../mutable/stores/store.wings.dart';
 import '../../base/models/model.wings.dart';
+import '../../binding/reactive.binding.dart';
 import '../../main.wings.dart';
 import '../../providers/errors/error.model.wings.dart';
 import '../../providers/errors/exceptions.enum.wings.dart';
@@ -10,6 +8,7 @@ import '../../providers/errors/exceptions.wings.dart';
 import '../../providers/main.provider.wings.dart';
 import '../../providers/remote/request.wings.dart';
 import '../../states/state.wings.dart';
+import '../middlewares/middleware.wings.dart';
 
 class WingsController {
   WingsController() {

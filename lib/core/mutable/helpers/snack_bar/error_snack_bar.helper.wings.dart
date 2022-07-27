@@ -1,8 +1,8 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 
+import '../../../immutable/main.wings.dart';
 import '../../../immutable/providers/errors/error.model.wings.dart';
 import '../../themes/theme.wings.dart';
 
@@ -31,6 +31,6 @@ void errorSnackBar({required ErrorModel? error}) {
         error.message,
         style: WingsTheme.body2,
       ),
-    ).show(Get.context!);
+    ).show(Wings.context);
   });
 }

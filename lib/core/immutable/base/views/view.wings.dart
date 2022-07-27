@@ -1,15 +1,15 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:wings/core/immutable/base/middlewares/middleware.wings.dart';
-import 'package:wings/core/immutable/binding/main.bidings.dart';
 
 import '../../../mutable/widgets/default_appbar.widget.wings.dart';
 import '../../../mutable/widgets/states/app_state.static.wings.dart';
+import '../../binding/main.bidings.dart';
 import '../../main.wings.dart';
 import '../../states/state.wings.dart';
 import '../../utils/screen_util.wings.dart';
 import '../controllers/controller.wings.dart';
+import '../middlewares/middleware.wings.dart';
 import '../models/model.wings.dart';
 
 // ignore: must_be_immutable
@@ -111,5 +111,4 @@ class WingsView<T> extends StatelessWidget {
   Widget floatingActionButton() {
     return const SizedBox();
   }
-
 }

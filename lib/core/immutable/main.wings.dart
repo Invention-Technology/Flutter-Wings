@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:wings/core/immutable/base/controllers/controller.wings.dart';
-import 'package:wings/core/immutable/translations/lang.controller.wings.dart';
-import 'package:wings/core/immutable/translations/language.wings.dart';
 
+import 'base/controllers/controller.wings.dart';
 import 'base/views/view.wings.dart';
 import 'providers/main.provider.wings.dart';
+import 'translations/lang.controller.wings.dart';
+import 'translations/language.wings.dart';
 
 part 'main/navigating.wings.dart';
 
@@ -34,8 +34,7 @@ class Wings {
 
     if (!instance.controllers.containsKey(tag)) {
       instance.controllers.addAll({tag: controller});
-    }
-    else {
+    } else {
       return instance.controllers[tag];
     }
 
