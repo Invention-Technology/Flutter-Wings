@@ -7,7 +7,7 @@
 
 # About Wings
 
-Wings is an MVC file structure build with [getx](https://github.com/jonataslaw/getx) for [flutter](https://github.com/flutter/flutter) projects. to reduce the time of development  and increase the programmer productivity.
+[Wings](https://github.com/Invention-Technology/Flutter-Wings) is an MVC file structure for [flutter](https://github.com/flutter/flutter) projects. to reduce the time of development and increase the programmer productivity.
 
 ## File Structure
 
@@ -40,7 +40,7 @@ Wings is an MVC file structure build with [getx](https://github.com/jonataslaw/g
 
 clone the project to your device 
 
-`git clone https://github.com/jonataslaw/getx.git`
+`git clone https://github.com/Invention-Technology/Flutter-Wings.git`
 
 go to the project directory and run `flutter pub get` to install all the dependencies 
 
@@ -111,7 +111,7 @@ class HomeController extends WingsController {
 
   @override
   void onInit() async {
-    model = HomeModel(); // the model that coresponsidng to this feature
+    model = HomeModel(); // the model that corresponding to this feature
 
     request = WingsRequest(url: WingsURL.home, shouldCache: true); // request data using REST API with the option caching the response
 
