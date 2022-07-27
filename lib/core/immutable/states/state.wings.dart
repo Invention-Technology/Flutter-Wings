@@ -5,11 +5,8 @@ import '../providers/errors/error.model.wings.dart';
 class WingsState {
   final bool isInitial;
   final bool isLoading;
-  final bool isLoadingMore;
   final bool isLoaded;
-  final bool isLoadedMore;
   final bool isSuccess;
-  final bool isSuccessMore;
   final bool isError;
   final bool isSuccessFlushBar;
   final bool isErrorFlushBar;
@@ -34,9 +31,6 @@ class WingsState {
     this.isError = false,
     this.isSuccess = false,
     this.errorData,
-    this.isLoadingMore = false,
-    this.isLoadedMore = false,
-    this.isSuccessMore = false,
     this.isSuccessFlushBar = false,
     this.flushErrorData,
     this.flushSuccessMessage = '',
@@ -47,16 +41,8 @@ class WingsState {
     return WingsState._(isLoading: true);
   }
 
-  factory WingsState.loadingMore() {
-    return WingsState._(isSuccess: true, isLoadingMore: true);
-  }
-
   factory WingsState.success() {
     return WingsState._(isSuccess: true);
-  }
-
-  factory WingsState.successMore() {
-    return WingsState._(isSuccessMore: true);
   }
 
   factory WingsState.error({ErrorModel? error}) {
@@ -69,10 +55,6 @@ class WingsState {
 
   factory WingsState.loaded() {
     return WingsState._(isLoaded: true);
-  }
-
-  factory WingsState.loadedMore() {
-    return WingsState._(isLoadedMore: true);
   }
 
   factory WingsState.successFlushBar({message}) {
@@ -94,8 +76,6 @@ class WingsState {
     if (isLoading) return 'Loading';
     if (isLoaded) return 'Loaded';
     if (isSuccess) return 'Success';
-    if (isLoadingMore) return 'LoadingMore';
-    if (isLoadedMore) return 'LoadedMore';
 
     return 'Initial';
   }

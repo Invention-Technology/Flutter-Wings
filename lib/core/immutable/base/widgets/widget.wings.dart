@@ -43,7 +43,6 @@ class WingsWidget extends StatelessWidget {
             });
           }
           if (currentState.isSuccess ||
-              currentState.isLoadingMore ||
               currentState.isSuccessFlushBar ||
               currentState.isErrorFlushBar) {
             return successState(context);

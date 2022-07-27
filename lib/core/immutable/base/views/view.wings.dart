@@ -75,7 +75,6 @@ class WingsView<T> extends StatelessWidget {
                 });
               }
               if (state.isSuccess ||
-                  state.isLoadingMore ||
                   state.isSuccessFlushBar ||
                   state.isErrorFlushBar) {
                 return successState(context);
