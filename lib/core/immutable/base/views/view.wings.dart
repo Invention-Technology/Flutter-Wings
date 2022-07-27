@@ -94,11 +94,11 @@ class WingsView<T> extends StatelessWidget {
   }
 
   Widget successState(BuildContext context) {
-    return Container();
+    return const SizedBox();
   }
 
   Widget initialState(BuildContext context) {
-    return Container();
+    return const SizedBox();
   }
 
   PreferredSizeWidget? pageAppBar(BuildContext context) {
@@ -106,18 +106,11 @@ class WingsView<T> extends StatelessWidget {
   }
 
   Widget bottomNavigationBar() {
-    return const SizedBox(
-      height: 0,
-      width: 0,
-    );
+    return const SizedBox();
   }
 
   Widget floatingActionButton() {
-    return const SizedBox(
-      height: 0,
-      width: 0,
-    );
+    return const SizedBox();
   }
-
 
 }

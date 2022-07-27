@@ -93,6 +93,7 @@ class WingsState {
     if (isError) return 'Error';
     if (isLoading) return 'Loading';
     if (isLoaded) return 'Loaded';
+    if (isSuccess) return 'Success';
     if (isLoadingMore) return 'LoadingMore';
     if (isLoadedMore) return 'LoadedMore';
 

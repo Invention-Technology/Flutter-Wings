@@ -14,6 +14,11 @@ import '../../states/state.wings.dart';
 class WingsController {
   WingsController() {
     fillMiddlewares();
+
+    state.stream.listen((event) {
+      onStatusChanged();
+    });
+
     onInit();
   }
 
@@ -147,4 +152,6 @@ class WingsController {
   void fillMiddlewares() {
     middlewares = [];
   }
+
+  void onStatusChanged() {}
 }
