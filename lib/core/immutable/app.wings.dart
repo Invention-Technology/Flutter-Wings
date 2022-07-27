@@ -29,7 +29,7 @@ class WingsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var materialApp = MaterialApp(
+    return MaterialApp(
       navigatorKey: Wings.key,
       title: title,
       theme: theme,
@@ -38,8 +38,6 @@ class WingsApp extends StatelessWidget {
       home: home,
       locale: locale ?? Wings.locale,
     );
-
-    return materialApp;
   }
 
 }
