@@ -7,10 +7,11 @@ import '../../themes/theme.wings.dart';
 class LoadingState extends StatelessWidget {
   final double? height;
   final double textSize;
+  final double? size;
 
   const LoadingState({
     Key? key,
-    double size = 50,
+    this.size,
     this.height,
     this.textSize = 20,
   }) : super(key: key);
@@ -18,11 +19,12 @@ class LoadingState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height ?? ScreenUtil.instance.screenHeightNoPaddingNoAppbar,
+      height: height,
       alignment: Alignment.center,
-      child: SpinKitRing(
+      child: SpinKitPulse(
         color: WingsTheme.primaryColor,
-        size: ScreenUtil.instance.screenWidth / 5,
+        size: size ?? ScreenUtil.instance.screenWidth / 6,
+        // lineWidth: 5,
         duration: const Duration(seconds: 1),
         // type: SpinKitWaveType.end,
       ),

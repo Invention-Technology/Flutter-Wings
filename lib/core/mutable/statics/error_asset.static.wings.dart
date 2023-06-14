@@ -1,7 +1,7 @@
 class WingsErrorAssets {
   // Just in case that some icons or images deleted or not found, use those default values to handle the errors that may arise
   static String defaultImage = '';
-  static String defaultIcon = '';
+  static String defaultIcon = 'assets/icons/states/empty.svg';
 
   static String unexpectedErrorImage = '';
   static String unexpectedErrorIcon = '';
@@ -13,7 +13,8 @@ class WingsErrorAssets {
   static String cacheExceptionIcon = '';
 
   static String emptyExceptionImage = '';
-  static String emptyExceptionIcon = '';
+  static String emptyExceptionIcon = 'assets/icons/states/empty.svg';
+  static String emptyOrderIcon = 'assets/icons/states/orders_empty.svg';
 
   static String noContentExceptionImage = '';
   static String noContentExceptionIcon = '';

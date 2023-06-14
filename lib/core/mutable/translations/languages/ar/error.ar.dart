@@ -1,9 +1,10 @@
 final Map<String, String> errorAr = {
   'Error:ServerException': 'عذراً لم نتمكن من الاتصال بالخادم',
+  'Error:TimeoutException': 'عذراً لم نتمكن من الاتصال بالخادم',
   'Error:CacheException': 'لاتوجد بيانات',
   'Error:ConnectionException': 'لايوجد اتصال بالانترنت!',
   'Error:EmptyException': 'لاتوجد أي بيانات في الوقت الحالي!',
-  'Error:InvalidException': 'تاكد من صحة  البيانات المدخلة',
+  'Error:InvalidException': 'تاكد من صحة البيانات المدخلة',
   'Error:ExpireException': 'انتهت صلاحية الكود',
   'Error:NotFoundException': 'لايوجد حساب بهذه البيانات!',
   'Error:UserExistsException':

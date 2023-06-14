@@ -30,7 +30,6 @@ class WingsLanguageController {
     }
 
     currentLanguage = newLang;
-    _langService.write(WingsLanguageService.languageKey, newLang);
     _langService.updateLocale(newLang.locale);
   }
 }

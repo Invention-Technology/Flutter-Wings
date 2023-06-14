@@ -5,12 +5,19 @@ import '../../helpers/snack_bar/error_snack_bar.helper.wings.dart'
     as error_snack_bar;
 import '../../helpers/snack_bar/success_snack_bar.helper.wings.dart'
     as success_snack_bar;
+import 'empty_state.widget.dart';
 import 'error_state.widget.wings.dart';
 import 'loading_state.widget.wings.dart';
 
 class WingsAppState {
   static Widget defaultWidgetState() {
     return loading();
+  }
+
+  static Widget emptyState({error}) {
+    return WingsEmptyState(
+      error: error,
+    );
   }
 
   static Widget errorState({onRefresh, error}) {
@@ -24,8 +31,8 @@ class WingsAppState {
     return const LoadingState();
   }
 
-  static void successSnackBar({String message = '', String title = ''}) {
-    success_snack_bar.successSnackBar(message: message, title: title);
+  static void successSnackBar({String message = ''}) {
+    success_snack_bar.successSnackBar(message: message);
   }
 
   static void errorSnackBar({ErrorModel? error}) {

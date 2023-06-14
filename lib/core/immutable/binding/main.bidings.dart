@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'reactive.binding.dart';
 
 typedef WidgetReturn = Widget Function(WingsReactive controller);

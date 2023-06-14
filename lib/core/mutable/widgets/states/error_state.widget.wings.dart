@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../immutable/providers/errors/error.model.wings.dart';
+import '../../themes/theme.wings.dart';
 
 class WingsErrorState extends StatelessWidget {
   const WingsErrorState({
@@ -20,19 +23,27 @@ class WingsErrorState extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Spacer(),
+          if (error != null && error!.icon.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(bottom: 0.05.sh),
+              child: SvgPicture.asset(error!.icon),
+            ),
           if (error != null)
             Text(
               error!.message,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  // color: AppLightTheme.primaryColor.withOpacity(.2),
+                // color: AppLightTheme.primaryColor.withOpacity(.2),
                   height: 1.4,
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0),
             ),
-          if (onRefresh != null)
+          if (onRefresh != null && !(error?.hideRetry ?? false))
             TextButton(
-              child: const Text('Retry'),
+              child: Text(
+                'إعادة المحاولة',
+                style: TextStyle(color: WingsTheme.primaryColor),
+              ),
               onPressed: () => onRefresh!(),
               // isPressed: false,
             ),

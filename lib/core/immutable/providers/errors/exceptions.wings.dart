@@ -12,7 +12,10 @@ class WingsException implements Exception {
       case 404:
         return NotFoundException();
       case 406:
+      case 400:
         return InvalidException();
+      case 408:
+        return TimeoutException();
       case 410:
         return ExpireException();
       case 434:
@@ -26,7 +29,7 @@ class WingsException implements Exception {
     }
   }
 
-  factory WingsException.fromEnumeration(ExceptionTypes types) {
+  factory WingsException.fromEnumeration([ExceptionTypes? types]) {
     switch (types) {
       case ExceptionTypes.cache:
         return CacheException();
@@ -38,7 +41,7 @@ class WingsException implements Exception {
         return TimeoutException();
       case ExceptionTypes.empty:
         return EmptyException();
-      case ExceptionTypes.unexpected:
+      default:
         return UnexpectedException();
     }
   }
@@ -73,3 +76,9 @@ class ConnectionException extends WingsException {}
 class ProcessException extends WingsException {}
 
 class TimeoutException extends WingsException {}
+
+extension ToException on int {
+  WingsException get toException {
+    return WingsException.fromStatusCode(this);
+  }
+}

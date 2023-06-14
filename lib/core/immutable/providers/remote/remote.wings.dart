@@ -1,101 +1,158 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 
-import '../../../mutable/remote/response_format.wings.dart';
-import '../../../mutable/remote/urls.wings.dart';
-import '../../main.wings.dart';
 import '../errors/exceptions.enum.wings.dart';
 import '../errors/exceptions.wings.dart';
-import '../errors/mapping_errors.helper.wings.dart';
 import 'methods.enums.wings.dart';
 import 'request.wings.dart';
 
-class Remote {
-  static Remote? _instance;
+class WingsRemoteProvider {
+  factory WingsRemoteProvider() {
+    _singleton ??= WingsRemoteProvider._();
 
-  static Remote get instance {
-    if (_instance == null) init();
-
-    return _instance!;
+    return _singleton!;
   }
 
-  static void init() {
-    _instance ??= Remote();
+  WingsRemoteProvider._();
 
-    var options = BaseOptions(
-      baseUrl: WingsURL.baseURL,
-      connectTimeout: 5000,
-      receiveTimeout: 3000,
-      sendTimeout: 300000,
-    );
+  static WingsRemoteProvider? _singleton;
 
-    _instance!.dio = Dio(options);
-  }
-
-  Dio? dio;
-
-  int statusCode = 0;
-  RxDouble sendingRemaining = 0.0.obs;
-  RxDouble receiveRemaining = 0.0.obs;
-
-  bool get success =>
-      statusCode == 200 || statusCode == 201 || statusCode == 202;
+  Dio dio = Dio();
 
   Future<dynamic> send({
     required WingsRequest request,
-    required HttpMethod method,
+    required WingsRemoteMethod method,
+    List<int> successStates = const [200, 201, 202],
+    Function(Response, int)? onSuccess,
+    Function(int, dynamic error)? onError,
+    Function(int, int)? onSendProgress,
+    Function(int, int)? onReceiveProgress,
   }) async {
-    try {
-      var response = await dio!.request(
+    int errorStatusCode = 500;
+
+    // try {
+      Response<dynamic> response = await dio
+          .request(
         request.urlQueryString,
         data: request.body,
-        options: Options(method: method.name, headers: request.header!.toMap()),
-        onSendProgress: (sent, total) {
-          sendingRemaining.value = (total - sent) / total * 100;
-        },
-        onReceiveProgress: (received, total) {
-          receiveRemaining.value = (total - received) / total * 100;
-        },
-      ).timeout(
-        Duration(milliseconds: dio!.options.sendTimeout),
+        options: Options(
+          method: method.name,
+          headers: request.header,
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      )
+          .timeout(
+        dio.options.sendTimeout ?? Duration(seconds: 10),
         onTimeout: () {
-          throw WingsException.fromEnumeration(ExceptionTypes.timeout);
+          if (onError != null) {
+            onError(408, null);
+          }
+          errorStatusCode = 408;
+
+          throw 408.toException;
         },
       );
 
-      statusCode = response.statusCode!;
+      var statusCode = response.statusCode!;
 
-      if (!success) {
+      if (successStates.contains(statusCode)) {
+        if (onSuccess != null) onSuccess(response, statusCode);
+      } else {
         log('Server response with status code $statusCode',
             name: 'Wings Remote');
-        throw WingsException.fromStatusCode(statusCode);
+        log(response.data.toString(), name: 'Wings Remote');
+        if (onError != null) {
+          onError(statusCode, response.data);
+        } else {
+          throw statusCode.toException;
+        }
       }
+      return response;
+    // } catch (exception) {
+    //   log(exception.toString(), name: 'Wings Remote');
+    //   if (onError != null) {
+    //     onError(errorStatusCode, exception);
+    //   } else {
+    //     _catchExceptions(exception);
+    //   }
+    // }
+  }
 
-      _checkInvalidResponse(response.data);
+  Future<dynamic> download({
+    required WingsRequest request,
+    required String savePath,
+    Function(int, int)? onProgress,
+    VoidCallback? onComplete,
+    List<int> successStates = const [200, 201, 202],
+    Function(Response, int)? onSuccess,
+    Function(Response?, int)? onError,
+    bool overrideIfExists = false,
+  }) async {
+    if (await File(savePath).exists() && !overrideIfExists) {
+      if (onComplete != null) onComplete();
+    } else {
+      try {
+        var response = await dio
+            .download(
+          request.url,
+          savePath,
+          options: Options(
+            headers: request.header,
+            validateStatus: (status) {
+              return status != null && status < 500;
+            },
+          ),
+          onReceiveProgress: onProgress,
+        )
+            .timeout(
+          dio.options.sendTimeout ?? Duration(seconds: 10),
+          onTimeout: () {
+            if (onError != null) {
+              onError(null, 408);
+            }
 
-      if (WingsResponseFormat.key != null &&
-          WingsResponseFormat.key!.isNotEmpty) {
-        return jsonDecode(response.data)[WingsResponseFormat.key];
+            throw WingsException.fromEnumeration(ExceptionTypes.timeout);
+          },
+        ).whenComplete(() {
+          if (onComplete != null) onComplete();
+        });
+
+        var statusCode = response.statusCode!;
+
+        if (successStates.contains(statusCode)) {
+          if (onSuccess != null) onSuccess(response, statusCode);
+        } else {
+          log('Server response with status code $statusCode',
+              name: 'Wings Remote');
+          if (onError != null) {
+            onError(response, statusCode);
+          } else {
+            throw WingsException.fromStatusCode(statusCode);
+          }
+        }
+
+        return jsonDecode(response.data);
+      } catch (exception) {
+        _catchExceptions(exception);
       }
-
-      return response.data;
-    } catch (exception) {
-      Wings.provider.error = mapExceptionToMessage(exception);
     }
   }
 
-  void _checkInvalidResponse(response) {
-    if (response.toString().isEmpty) {
-      log('Empty Response from the Server', name: 'Wings Remote');
-      throw WingsException.fromStatusCode(404);
+  void _catchExceptions(Object exception) {
+    log("$exception");
+    var statusCode = 500;
+    if (exception is DioError) {
+      statusCode = exception.response?.statusCode ?? 500;
+      log(exception.response?.data, name: 'dio error');
     }
-
-    if (!WingsResponseFormat.validatedResponse(response.toString())) {
-      log('Invalid Response from the Server', name: 'Wings Remote');
-      throw WingsException.fromStatusCode(0);
-    }
+    throw WingsException.fromStatusCode(statusCode);
   }
 }

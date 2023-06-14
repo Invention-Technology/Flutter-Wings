@@ -1,5 +1,5 @@
 class WingsModel {
-  WingsModel();
+  const WingsModel();
 
   List<WingsModel> fromJsonList(List<dynamic> json) {
     return [];

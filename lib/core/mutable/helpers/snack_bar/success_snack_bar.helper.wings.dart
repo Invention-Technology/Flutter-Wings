@@ -6,12 +6,11 @@ import '../../../immutable/main.wings.dart';
 import '../../themes/theme.wings.dart';
 
 void successSnackBar({
-  String title = '',
   String message = '',
 }) {
   Future.delayed(const Duration(seconds: 0), () {
     Flushbar(
-      flushbarPosition: FlushbarPosition.BOTTOM,
+      flushbarPosition: FlushbarPosition.TOP,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 16),
       borderRadius: BorderRadius.circular(8.0),
@@ -20,10 +19,7 @@ void successSnackBar({
       dismissDirection: FlushbarDismissDirection.HORIZONTAL,
       icon: CircleAvatar(
         backgroundColor: Colors.white,
-        child: SvgPicture.asset(
-          'assets/icons/success.svg',
-          color: const Color(0xff39CC60),
-        ),
+        child: Icon(Icons.check, color: WingsTheme.primarySwatch,),
       ),
       backgroundColor: const Color(0xffE2FFEA),
       // message: ,
@@ -31,7 +27,7 @@ void successSnackBar({
 
       messageText: Text(
         message,
-        style: WingsTheme.body2,
+        style: WingsTheme.body1,
       ),
     ).show(Wings.context);
   });

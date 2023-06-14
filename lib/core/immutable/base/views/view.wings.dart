@@ -1,8 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import '../../../mutable/helpers/loading.dialog.helper.dart';
+import '../../../mutable/helpers/util.helper.dart';
+import '../../../mutable/themes/theme.wings.dart';
 import '../../../mutable/widgets/default_appbar.widget.wings.dart';
+import '../../../mutable/widgets/default_drawer.widget.wings.dart';
 import '../../../mutable/widgets/states/app_state.static.wings.dart';
 import '../../binding/main.bidings.dart';
 import '../../main.wings.dart';
@@ -16,11 +19,15 @@ import '../models/model.wings.dart';
 class WingsView<T> extends StatelessWidget {
   late final WingsController _controller;
 
-  WingsView({Key? key, required WingsController controller, String? tag})
-      : super(key: key) {
+  WingsView({
+    Key? key,
+    required WingsController controller,
+    String? tag,
+    bool permanent = false,
+  }) : super(key: key) {
     _controllerTag = tag ?? controller.runtimeType.toString();
 
-    _controller = Wings.add(controller, tag: tag);
+    _controller = Wings.add(controller, tag: tag, permanent: permanent);
   }
 
   T get controller => _controller.child;
@@ -35,19 +42,24 @@ class WingsView<T> extends StatelessWidget {
 
   ScreenUtil get screenUtil => ScreenUtil.instance;
 
+  String? get appbarTitle => null;
+
+  List<Widget>? get actions => null;
+
   @override
   Widget build(BuildContext context) {
     _controller.onReady();
     return WillPopScope(
       onWillPop: () {
-        log('onWillPop called', name: 'Remove before publishing');
         Wings.remove(tag: _controllerTag);
 
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: ThemeData().scaffoldBackgroundColor,
+        backgroundColor: WingsTheme.scaffoldBackgroundColor,
         appBar: pageAppBar(context),
+        drawer: drawer(),
+        drawerEnableOpenDragGesture: false,
         body: Wx(
             controller: _controller.state,
             builder: (_) {
@@ -58,10 +70,15 @@ class WingsView<T> extends StatelessWidget {
                 );
               }
 
+              if (state.isEmpty) {
+                return WingsAppState.emptyState(
+                  error: state.errorData,
+                );
+              }
+
               if (state.isSuccessFlushBar) {
                 WingsAppState.successSnackBar(
                   message: state.flushSuccessMessage,
-                  title: state.flushSuccessTitle,
                 );
                 Future.delayed(const Duration(milliseconds: 10), () {
                   _controller.state.data = WingsState.success();
@@ -74,8 +91,14 @@ class WingsView<T> extends StatelessWidget {
                   _controller.state.data = WingsState.success();
                 });
               }
+
+              if (state.isLoadingMore) {
+                loadingDialogHelper();
+              }
+
               if (state.isSuccess ||
                   state.isSuccessFlushBar ||
+                  state.isLoadingMore ||
                   state.isErrorFlushBar) {
                 return successState(context);
               }
@@ -86,10 +109,41 @@ class WingsView<T> extends StatelessWidget {
 
               return WingsAppState.defaultWidgetState();
             }),
-        bottomNavigationBar: bottomNavigationBar(),
-        floatingActionButton: floatingActionButton(),
+        bottomNavigationBar: Wx(
+            controller: _controller.state,
+            builder: (_) {
+              if (state.isSuccess ||
+                  state.isSuccessFlushBar ||
+                  state.isLoadingMore ||
+                  state.isErrorFlushBar) {
+                return bottomNavigationBar();
+              }
+
+              return SizedBox();
+            }),
+        floatingActionButton: Wx(
+          controller: _controller.state,
+          builder: (_) {
+            if (state.isSuccess ||
+                state.isSuccessFlushBar ||
+                state.isLoadingMore ||
+                state.isErrorFlushBar) {
+              return floatingActionButton();
+            }
+
+            return const SizedBox();
+          },
+        ),
+        floatingActionButtonLocation: floatingActionButtonLocation,
+        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       ),
     );
+  }
+
+  bool get resizeToAvoidBottomInset => true;
+
+  FloatingActionButtonLocation get floatingActionButtonLocation {
+    return FloatingActionButtonLocation.endFloat;
   }
 
   Widget successState(BuildContext context) {
@@ -101,7 +155,11 @@ class WingsView<T> extends StatelessWidget {
   }
 
   PreferredSizeWidget? pageAppBar(BuildContext context) {
-    return wingsDefaultAppbar(context);
+    return wingsDefaultAppbar(context, title: appbarTitle, actions: actions);
+  }
+
+  Widget? drawer() {
+    return const WingsDefaultDrawerWidget();
   }
 
   Widget bottomNavigationBar() {
@@ -110,5 +168,18 @@ class WingsView<T> extends StatelessWidget {
 
   Widget floatingActionButton() {
     return const SizedBox();
+  }
+
+  Widget lastItemInPaginationList() {
+    if (_controller.lastPage) {
+      return const SizedBox();
+    } else {
+      _controller.nextPage();
+
+      return SpinKitPulse(
+        color: WingsTheme.primarySwatch,
+        size: 0.05.wsh,
+      );
+    }
   }
 }

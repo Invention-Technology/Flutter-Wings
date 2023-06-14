@@ -1,4 +1,4 @@
-enum HttpMethod {
+enum WingsRemoteMethod {
   get,
   post,
   put,

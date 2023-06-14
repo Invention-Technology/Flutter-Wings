@@ -1,36 +1,49 @@
 part of '../main.wings.dart';
 
-void _push(WingsView page, {Map<String, dynamic> args = const {}}) {
-  Wings.arguments = args;
-  _checkMiddleware(page);
-  Navigator.of(Wings.context).push(
+Future<T?> _push<T extends Object?>(dynamic page,
+    {Map<String, dynamic> args = const {}}) {
+  if (page is WingsView) {
+    Wings.arguments = args;
+    _checkMiddleware(page);
+  }
+
+  return Navigator.of(Wings.context).push(
     MaterialPageRoute(builder: (context) => page),
   );
 }
 
-void _pushReplace(WingsView page, {Map<String, dynamic> args = const {}}) {
-  Wings.arguments = args;
-  _checkMiddleware(page);
+void _pushReplace(dynamic page, {Map<String, dynamic> args = const {}}) {
+  if (page is WingsView) {
+    Wings.arguments = args;
+    _checkMiddleware(page);
+  }
+
   Navigator.of(Wings.context).pushReplacement(
     MaterialPageRoute(builder: (context) => page),
   );
 }
 
-void _pushReplaceAll(WingsView page, {Map<String, dynamic> args = const {}}) {
-  Wings.arguments = args;
-  _checkMiddleware(page);
-  // TODO: Check this later
+void _pushReplaceAll(dynamic page, {Map<String, dynamic> args = const {}}) {
+  if (page is WingsView) {
+    Wings.arguments = args;
+    _checkMiddleware(page);
+  }
+
   Navigator.of(Wings.context).pushAndRemoveUntil(
     MaterialPageRoute(builder: (context) => page),
-    ModalRoute.withName('/'),
+    (route) => false,
   );
 }
 
-void _pop() {
+void _pop({bool removeLast = false}) {
+  if (removeLast) {
+    Wings.removeLast();
+  }
+
   Navigator.of(Wings.context).pop();
 }
 
-void _checkMiddleware(WingsView page) {
+_checkMiddleware(WingsView page) {
   for (var middleware in page.middlewares) {
     dynamic boot = middleware.boot();
     if (boot != true) {

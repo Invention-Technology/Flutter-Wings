@@ -7,3 +7,13 @@ abstract class TranslationMapper {
     'ar': ar,
   };
 }
+
+extension Trans on String {
+  String get tr {
+    try {
+      return ar[this] ?? '';
+    } catch (ex) {
+      return this;
+    }
+  }
+}

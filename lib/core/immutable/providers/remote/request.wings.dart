@@ -1,29 +1,49 @@
+import '../../../mutable/helpers/phone.info.helper.dart';
+
 class WingsRequest {
   String url;
+  dynamic id;
   bool shouldCache;
   Map<String, dynamic> queryString;
-  WingsRequestHeader? header;
-  Map<String, dynamic> body;
+  Map<String, dynamic> _header;
+  dynamic body;
   bool nullable;
+  bool withPagination;
+  int limit;
 
   WingsRequest({
     required this.url,
+    this.id,
     this.shouldCache = false,
     this.nullable = false,
     this.queryString = const {},
     this.body = const {},
-    this.header,
-  }) {
-    header ??= WingsRequestHeader.instance;
+    this.withPagination = false,
+    Map<String, dynamic> header = const {},
+    this.limit = 20,
+  }) : _header = header;
+
+  String get withId => id != null ? '/$id' : '';
+
+  String get urlQueryString => url + withId + _queryStringFormat();
+
+  Map<String, dynamic> get header {
+    var head = Map<String, dynamic>.from(_header);
+
+    if (WingsDeviceInfo().haveDeviceData) {
+      head.addAll(WingsDeviceInfo().deviceInfoRequestHeader);
+    }
+
+    return head;
   }
 
-  String get urlQueryString => url + _queryStringFormat();
-
   String _queryStringFormat() {
-    String query = '';
+    bool showPagination = withPagination && !queryString.containsKey('limit');
+
+    String query = showPagination ? '?limit=$limit' : '';
 
     if (queryString.isNotEmpty) {
-      query = '?';
+      query = showPagination ? '$query&' : '?';
 
       queryString.forEach((key, value) {
         query += '$key=$value&';
@@ -33,6 +53,28 @@ class WingsRequest {
     }
 
     return query;
+  }
+
+  WingsRequest copyWith({
+    String? url,
+    dynamic id,
+    bool? shouldCache,
+    bool? nullable,
+    Map<String, dynamic>? queryString,
+    dynamic body,
+    Map<String, dynamic>? header,
+    bool? withPagination,
+  }) {
+    return WingsRequest(
+      url: url ?? this.url,
+      id: id ?? this.id,
+      shouldCache: shouldCache ?? this.shouldCache,
+      nullable: nullable ?? this.nullable,
+      queryString: queryString ?? this.queryString,
+      body: body ?? this.body,
+      header: header ?? this.header,
+      withPagination: withPagination ?? this.withPagination,
+    );
   }
 }
 
