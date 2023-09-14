@@ -20,18 +20,30 @@ class WingsResponseModel extends WingsModel {
   });
 
   factory WingsResponseModel.fromJson(Map<String, dynamic> json) {
+    int totalSize = json['totalSize'] ?? 1;
+
+    int pageSize = json['pages'] ?? 1;
+    if (pageSize <= 0) pageSize = 1;
+
+    int pages = totalSize ~/ pageSize;
+    pages += int.tryParse((totalSize % pageSize).toString()) ?? 0;
+
     return WingsResponseModel(
       data: json['data'],
       message: json['Messages'],
       statusCode: json['Status'],
-      totalSize: json['totalSize'],
-      pageSize: json['pageSize'],
-      pages: json['pages'],
+      totalSize: totalSize,
+      pageSize: pageSize,
+      pages: pages,
     );
   }
 
   factory WingsResponseModel.fromResponse(Response<dynamic> response) {
-    return WingsResponseModel.fromJson(response.data);
+    try {
+      return WingsResponseModel.fromJson(response.data);
+    } catch (ex) {
+      return WingsResponseModel(data: response.data);
+    }
   }
 
   @override

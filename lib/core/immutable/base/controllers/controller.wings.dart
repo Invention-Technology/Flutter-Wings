@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:wings/core/mutable/helpers/loading.dialog.helper.dart';
+import 'package:wings/features/auth/controller/auth.dart';
 
 import '../../../mutable/remote/urls.wings.dart';
 import '../../../mutable/statics/error_asset.static.wings.dart';
@@ -21,7 +22,8 @@ class WingsController {
   WingsController() {
     fillMiddlewares();
 
-    state.stream.listen((event) {
+    state.stream.listen((state) {
+      log('State has changed to $state', name: child.runtimeType.toString());
       onStatusChanged();
     });
 
@@ -46,7 +48,7 @@ class WingsController {
   Type get type => model.runtimeType;
 
   /// The state of the widget
-  var state = WingsState.initial().wis;
+  var state = WingsState.loading().wis;
 
   /// call to WingsStore to use it globally
   WingsStore get store => WingsStore.instance;
@@ -70,7 +72,7 @@ class WingsController {
   bool busy = false;
 
   void onInit() async {
-    _originalRequest = request;
+    saveMainRequest();
 
     if (request.url.isNotEmpty) {
       await getData();
@@ -95,6 +97,7 @@ class WingsController {
     bool showFlushBar = false,
     String? flushBarMessage,
     bool useModel = true,
+    bool noLoading = false,
   }) async {
     if (busy) return;
 
@@ -104,7 +107,9 @@ class WingsController {
 
     if (req.url.isEmpty) return;
 
-    state.data = loadingState ?? WingsState.loading();
+    if (!noLoading) {
+      state.value = loadingState ?? WingsState.loading();
+    }
 
     await WingsRemoteProvider().send(
       request: req,
@@ -116,12 +121,12 @@ class WingsController {
           onError();
         }
 
-        if (state.data.isLoadingMore) {
+        if (state.value.isLoadingMore) {
           closeLoadingDialog();
         }
 
         if (acceptErrors) {
-          state.data = WingsState.success();
+          state.value = WingsState.success();
         } else {
           _fillStateWithError(
             statusCode: statusCode,
@@ -133,10 +138,8 @@ class WingsController {
       onSuccess: (response, status) {
         busy = false;
 
-        // TODO: uncomment those two lines if you have pagination and change [WingsResponseModel] according t it
-        // responseModel = WingsResponseModel.fromResponse(response);
-        // var res = responseModel?.data;
-        var res = response.data;
+        responseModel = WingsResponseModel.fromResponse(response);
+        var res = responseModel?.data;
         dynamic data;
 
         if (customKey.isNotEmpty) {
@@ -163,7 +166,7 @@ class WingsController {
           this.data = data;
         }
 
-        if (state.data.isLoadingMore) {
+        if (state.value.isLoadingMore) {
           closeLoadingDialog();
         }
 
@@ -172,11 +175,11 @@ class WingsController {
         }
 
         if (showFlushBar || flushBarMessage != null) {
-          state.data = WingsState.successFlushBar(
+          state.value = WingsState.successFlushBar(
               message: flushBarMessage ?? 'تمت العملية بنجاح');
         }
 
-        state.data = WingsState.success();
+        state.value = WingsState.success();
       },
     );
   }
@@ -210,7 +213,7 @@ class WingsController {
     }
 
     if (loadingState != null) {
-      state.data = loadingState;
+      state.value = loadingState;
     }
 
     await WingsRemoteProvider().send(
@@ -235,7 +238,7 @@ class WingsController {
             temp = res.data;
           }
 
-          if (state.data.isLoadingMore) {
+          if (state.value.isLoadingMore) {
             closeLoadingDialog();
           }
 
@@ -244,10 +247,10 @@ class WingsController {
           }
 
           if (showFlushBar || flushBarMessage != null) {
-            state.data = WingsState.successFlushBar(
+            state.value = WingsState.successFlushBar(
                 message: flushBarMessage ?? 'تمت الإضافة بنجاح');
           } else if (showSuccessState || !dontChangeState) {
-            state.data = WingsState.success();
+            state.value = WingsState.success();
           }
 
           if (backOnSuccess) {
@@ -261,7 +264,7 @@ class WingsController {
             onError();
           }
 
-          if (state.data.isLoadingMore) {
+          if (state.value.isLoadingMore) {
             closeLoadingDialog();
           }
 
@@ -284,7 +287,7 @@ class WingsController {
       icon: WingsErrorAssets.emptyExceptionIcon,
     );
 
-    state.data = WingsState.error(error: emptyException);
+    state.value = WingsState.error(error: emptyException);
   }
 
   void fillMiddlewares() {
@@ -293,14 +296,22 @@ class WingsController {
 
   void onStatusChanged() {}
 
-  void refresh() async {
-    request = _originalRequest;
+  Future<void> refresh() async {
+    restoreMainRequest();
 
     await getData();
   }
 
+  void saveMainRequest() {
+    _originalRequest = request;
+  }
+
+  void restoreMainRequest() {
+    request = _originalRequest;
+  }
+
   void refreshStatus() async {
-    state.data = WingsState.success();
+    state.value = WingsState.success();
   }
 
   void onDispose() {}
@@ -315,12 +326,12 @@ class WingsController {
               ..addAll({'page': currentPaginationPage + 1}));
 
         await getData(
-          loadingState: WingsState.success(),
           acceptErrors: true,
           fillGlobalData: false,
+          noLoading: true,
           onError: () {
             lastPage = true;
-            state.data = WingsState.success();
+            state.value = WingsState.success();
           },
           onSuccess: (data) {
             onPaginationSuccess(data);
@@ -335,7 +346,7 @@ class WingsController {
     }
 
     lastPage = true;
-    state.data = WingsState.success();
+    state.value = WingsState.success();
   }
 
   void onPaginationSuccess(dynamic data) {
@@ -392,10 +403,8 @@ class WingsController {
   }
 
   bool checkTokenExpiration(int statusCode) {
-    /// Check if token has expired by the response exception.
-    /// you need to uncomment the Auth().loggedIn or any class that do the same thing
-    return statusCode.toException is UnauthenticatedException
-    /*&& Auth().loggedIn*/;
+    return statusCode.toException is UnauthenticatedException &&
+        Auth().loggedIn;
   }
 
   Future<void> refreshToken(Function()? onSuccess) async {
@@ -403,11 +412,10 @@ class WingsController {
     model = null;
 
     await getData(
-        request: WingsRequest(url: WingsURL.baseURL), // Change the URL to refresh token url
+        request: WingsRequest(url: WingsURL.baseImageURL),
         acceptErrors: true,
         onSuccess: (data) async {
-          // Update the token to Auth() class or any similar class
-          // Auth().updateToken(data['token']);
+          Auth().updateToken(data['token']);
           model = tempModel;
           if (onSuccess != null) {
             onSuccess();
@@ -440,14 +448,14 @@ class WingsController {
 
     if (errorState != null) {
       if (errorState.isError && !dontChangeState) {
-        state.data = WingsState.error(error: errorModel);
+        state.value = WingsState.error(error: errorModel);
       } else if (errorState.isErrorFlushBar) {
-        state.data = WingsState.errorFlushBar(error: errorModel);
+        state.value = WingsState.errorFlushBar(error: errorModel);
       } else if (!dontChangeState) {
-        state.data = errorState;
+        state.value = errorState;
       }
     } else if (!dontChangeState) {
-      state.data = WingsState.error(error: errorModel);
+      state.value = WingsState.error(error: errorModel);
     }
   }
 }

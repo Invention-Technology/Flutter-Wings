@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../mutable/themes/theme.wings.dart';
 import 'main.wings.dart';
+import '../../router.wings.dart';
 import 'translations/language.wings.dart';
 
 class WingsApp extends StatelessWidget {
@@ -33,7 +34,7 @@ class WingsApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
+        return MaterialApp.router(
           localizationsDelegates: const [
             GlobalCupertinoLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -44,7 +45,8 @@ class WingsApp extends StatelessWidget {
           ],
           locale: Wings.locale,
           debugShowCheckedModeBanner: false,
-          navigatorKey: Wings.key,
+          // navigatorKey: Wings.key,
+          routerConfig: WingsRouter().router,
           title: title,
           theme: ThemeData(
             primarySwatch: WingsTheme.primarySwatch,
@@ -53,7 +55,7 @@ class WingsApp extends StatelessWidget {
           ),
           darkTheme: darkTheme,
           themeMode: themeMode,
-          home: child,
+          // home: child,
         );
       },
       child: home,

@@ -1,8 +1,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:wings/features/auth/controller/auth.dart';
+import 'package:wings/router.wings.dart';
 
 import '../mutable/helpers/phone.info.helper.dart';
+import '../mutable/notifications/notification.service.dart';
+import '../mutable/notifications/notification.wings.dart';
 import '../mutable/remote/urls.wings.dart';
 import 'base/controllers/controller.wings.dart';
 import 'base/views/view.wings.dart';
@@ -26,13 +31,18 @@ class Wings {
   static Future<void> init({BuildContext? context}) async {
     _instance ??= Wings();
 
+    WingsNotification.init();
+    await PushNotificationService.init();
+
     WingsRemoteProvider().dio.options.baseUrl = WingsURL.baseURL;
     WingsRemoteProvider().dio.options.sendTimeout = const Duration(seconds: 20);
+    Auth();
 
     WingsDeviceInfo();
   }
 
-  static WingsController add(WingsController controller, {
+  static WingsController add(
+    WingsController controller, {
     String? tag,
     bool permanent = false,
   }) {
@@ -41,7 +51,7 @@ class Wings {
     tag ??= controller.runtimeType.toString();
 
     if (permanent) {
-      tag = "\$Permanent__" + tag;
+      tag = "\$Permanent__$tag";
     }
 
     if (!instance.controllers.containsKey(tag)) {
@@ -58,31 +68,39 @@ class Wings {
   static WingsController? find<T>({String? tag}) {
     tag ??= T.toString();
 
-    if (instance.controllers.containsKey(tag)) {
-      return instance.controllers[tag];
+    if (instance.controllers.containsKey(tag) ||
+        instance.controllers.containsKey("\$Permanent__$tag")) {
+      return instance.controllers[tag] ??
+          instance.controllers["\$Permanent__$tag"];
     } else {
       return null;
     }
   }
 
-  static void remove<T>({String? tag}) {
+  static void remove<T>({String? tag, bool isPermanent = false}) {
     tag ??= T.toString();
 
-    if (tag.startsWith("\$Permanent__")) {
+    if (tag.startsWith("\$Permanent__") && !isPermanent) {
       return;
+    }
+
+    if (isPermanent && !tag.startsWith("\$Permanent__")) {
+      tag = "\$Permanent__$tag";
     }
 
     if (instance.controllers.containsKey(tag)) {
       (instance.controllers[tag] as WingsController).onDispose();
       instance.controllers.removeWhere((key, value) => key == tag);
-    }
 
-    log('$tag controller has been removed', name: 'Wings');
+      log('$tag controller has been removed', name: 'Wings');
+    }
   }
 
   static void removeLast() {
     if (instance.controllers.isNotEmpty) {
       var last = instance.controllers.entries.last.key.toString();
+
+      if (last.startsWith("\$Permanent__")) return;
 
       instance.controllers[instance.controllers.entries.last.key].onDispose();
 
@@ -114,9 +132,30 @@ class Wings {
 
   static bool isView = true;
 
-  static Future<T?> push<T extends Object?>(dynamic page,
-      {Map<String, dynamic> args = const {}}) {
-    return _push(page, args: args);
+  static void push(
+    dynamic page, {
+    bool withAnimation = false,
+    Map<String, dynamic> args = const {},
+  }) {
+    _push(page, args: args, withAnimation: withAnimation);
+  }
+
+  static void pushNamed(String page) {
+    Wings.context.pushNamed(page);
+  }
+
+  static void pushReplacedNamed(String page) {
+    Wings.context.pushReplacementNamed(page);
+  }
+
+  static void pushReplaceAllNamed(String page) {
+    while (WingsRouter().router.canPop()) {
+      WingsRouter().router.pop();
+    }
+
+    Wings.instance.controllers = {};
+
+    pushReplacedNamed(page);
   }
 
   static void pushReplace(dynamic page,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wings/core/mutable/themes/theme.wings.dart';
 
 import '../../../mutable/statics/error_asset.static.wings.dart';
 import '../../../mutable/translations/languages/translation.mapper.dart';
@@ -22,6 +23,7 @@ class ErrorModel {
     this.exception,
     this.hideRetry = false,
   }) {
+    backgroundColor = WingsTheme.dangerLightColor;
     if (message.isEmpty)
       message = 'Error:${exception?.runtimeType.toString()}'.tr;
     if (icon.isEmpty) icon = WingsErrorAssets.defaultIcon;

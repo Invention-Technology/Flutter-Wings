@@ -20,7 +20,20 @@ class WingsReactive<T> {
     _controller.sink.add(_data as T);
   }
 
+  T get value => _data!;
+
   T get data => _data!;
+
+  set value(T value) {
+    _data = value;
+
+    _controller.sink.add(_data as T);
+  }
+
+  void updateState(void Function(T data) updateFunction) {
+    updateFunction(_data as T);
+    _controller.sink.add(_data as T);
+  }
 
   Stream<T> get stream => _stream!;
 }

@@ -34,7 +34,7 @@ class WingsRemoteProvider {
   }) async {
     int errorStatusCode = 500;
 
-    // try {
+    try {
       Response<dynamic> response = await dio
           .request(
         request.urlQueryString,
@@ -76,14 +76,14 @@ class WingsRemoteProvider {
         }
       }
       return response;
-    // } catch (exception) {
-    //   log(exception.toString(), name: 'Wings Remote');
-    //   if (onError != null) {
-    //     onError(errorStatusCode, exception);
-    //   } else {
-    //     _catchExceptions(exception);
-    //   }
-    // }
+    } catch (exception) {
+      log(exception.toString(), name: 'Wings Remote');
+      if (onError != null) {
+        onError(errorStatusCode, exception);
+      } else {
+        _catchExceptions(exception);
+      }
+    }
   }
 
   Future<dynamic> download({
@@ -147,7 +147,7 @@ class WingsRemoteProvider {
   }
 
   void _catchExceptions(Object exception) {
-    log("$exception");
+    log("$exception", name: "Wings Remote Catch Exception");
     var statusCode = 500;
     if (exception is DioError) {
       statusCode = exception.response?.statusCode ?? 500;

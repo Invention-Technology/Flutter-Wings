@@ -1,14 +1,35 @@
 part of '../main.wings.dart';
 
-Future<T?> _push<T extends Object?>(dynamic page,
-    {Map<String, dynamic> args = const {}}) {
+void _push(
+  dynamic page, {
+  bool withAnimation = false,
+  Map<String, dynamic> args = const {},
+}) {
   if (page is WingsView) {
     Wings.arguments = args;
     _checkMiddleware(page);
   }
 
-  return Navigator.of(Wings.context).push(
-    MaterialPageRoute(builder: (context) => page),
+  Navigator.of(Wings.context).push(
+    withAnimation
+        ? PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => page,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: animation.drive(
+                  Tween(
+                    begin: const Offset(-1.0, 0.0),
+                    end: const Offset(0.0, 0.0),
+                  ),
+                ),
+                child: child,
+              );
+            },
+          )
+        : MaterialPageRoute(
+            builder: (context) => page,
+          ),
   );
 }
 
@@ -29,10 +50,11 @@ void _pushReplaceAll(dynamic page, {Map<String, dynamic> args = const {}}) {
     _checkMiddleware(page);
   }
 
-  Navigator.of(Wings.context).pushAndRemoveUntil(
-    MaterialPageRoute(builder: (context) => page),
-    (route) => false,
-  );
+  while (ModalRoute.of(Wings.context)?.isFirst == false) {
+    _pop();
+  }
+
+  GoRouter.of(Wings.context).pushReplacement(page);
 }
 
 void _pop({bool removeLast = false}) {
@@ -43,7 +65,7 @@ void _pop({bool removeLast = false}) {
   Navigator.of(Wings.context).pop();
 }
 
-_checkMiddleware(WingsView page) {
+void _checkMiddleware(WingsView page) {
   for (var middleware in page.middlewares) {
     dynamic boot = middleware.boot();
     if (boot != true) {

@@ -24,19 +24,18 @@ class WingsState {
   );
   final String flushSuccessMessage;
 
-  WingsState._(
-      {this.isErrorFlushBar = false,
-      this.isInitial = false,
-      this.isLoading = false,
-      this.isLoadingMore = false,
-      this.isLoaded = false,
-      this.isEmpty = false,
-      this.isError = false,
-      this.isSuccess = false,
-      this.errorData,
-      this.isSuccessFlushBar = false,
-      this.flushErrorData,
-      this.flushSuccessMessage = ''});
+  WingsState._({this.isErrorFlushBar = false,
+    this.isInitial = false,
+    this.isLoading = false,
+    this.isLoadingMore = false,
+    this.isLoaded = false,
+    this.isEmpty = false,
+    this.isError = false,
+    this.isSuccess = false,
+    this.errorData,
+    this.isSuccessFlushBar = false,
+    this.flushErrorData,
+    this.flushSuccessMessage = ''});
 
   factory WingsState.loading() {
     return WingsState._(isLoading: true);
@@ -73,7 +72,11 @@ class WingsState {
     );
   }
 
-  factory WingsState.errorFlushBar({ErrorModel? error}) {
+  factory WingsState.errorFlushBar({ErrorModel? error, String? message}) {
+    if (error == null && message != null) {
+      error = ErrorModel(message: message);
+    }
+
     return WingsState._(isErrorFlushBar: true, flushErrorData: error);
   }
 

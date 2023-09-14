@@ -28,6 +28,8 @@ class WingsView<T> extends StatelessWidget {
     _controllerTag = tag ?? controller.runtimeType.toString();
 
     _controller = Wings.add(controller, tag: tag, permanent: permanent);
+
+    key ??= GlobalKey();
   }
 
   T get controller => _controller.child;
@@ -38,7 +40,7 @@ class WingsView<T> extends StatelessWidget {
 
   WingsModel get model => _controller.model!;
 
-  WingsState get state => _controller.state.data;
+  WingsState get state => _controller.state.value;
 
   ScreenUtil get screenUtil => ScreenUtil.instance;
 
@@ -46,15 +48,13 @@ class WingsView<T> extends StatelessWidget {
 
   List<Widget>? get actions => null;
 
+  bool get hideAppbar => false;
+
   @override
   Widget build(BuildContext context) {
     _controller.onReady();
     return WillPopScope(
-      onWillPop: () {
-        Wings.remove(tag: _controllerTag);
-
-        return Future.value(true);
-      },
+      onWillPop: onWillPop,
       child: Scaffold(
         backgroundColor: WingsTheme.scaffoldBackgroundColor,
         appBar: pageAppBar(context),
@@ -81,14 +81,14 @@ class WingsView<T> extends StatelessWidget {
                   message: state.flushSuccessMessage,
                 );
                 Future.delayed(const Duration(milliseconds: 10), () {
-                  _controller.state.data = WingsState.success();
+                  _controller.state.value = WingsState.success();
                 });
               }
 
               if (state.isErrorFlushBar) {
                 WingsAppState.errorSnackBar(error: state.flushErrorData);
                 Future.delayed(const Duration(milliseconds: 10), () {
-                  _controller.state.data = WingsState.success();
+                  _controller.state.value = WingsState.success();
                 });
               }
 
@@ -109,18 +109,6 @@ class WingsView<T> extends StatelessWidget {
 
               return WingsAppState.defaultWidgetState();
             }),
-        bottomNavigationBar: Wx(
-            controller: _controller.state,
-            builder: (_) {
-              if (state.isSuccess ||
-                  state.isSuccessFlushBar ||
-                  state.isLoadingMore ||
-                  state.isErrorFlushBar) {
-                return bottomNavigationBar();
-              }
-
-              return SizedBox();
-            }),
         floatingActionButton: Wx(
           controller: _controller.state,
           builder: (_) {
@@ -128,19 +116,28 @@ class WingsView<T> extends StatelessWidget {
                 state.isSuccessFlushBar ||
                 state.isLoadingMore ||
                 state.isErrorFlushBar) {
+              _noFloatingActionButton = false;
               return floatingActionButton();
             }
 
+            _noFloatingActionButton = true;
             return const SizedBox();
           },
         ),
-        floatingActionButtonLocation: floatingActionButtonLocation,
+        floatingActionButtonLocation:
+            _noFloatingActionButton ? null : floatingActionButtonLocation,
         resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       ),
     );
   }
 
   bool get resizeToAvoidBottomInset => true;
+
+  bool _noFloatingActionButton = true;
+
+  void onBackButtonClicked() {
+    Wings.pop();
+  }
 
   FloatingActionButtonLocation get floatingActionButtonLocation {
     return FloatingActionButtonLocation.endFloat;
@@ -181,5 +178,11 @@ class WingsView<T> extends StatelessWidget {
         size: 0.05.wsh,
       );
     }
+  }
+
+  Future<bool> onWillPop() {
+    Wings.remove(tag: _controllerTag);
+
+    return Future.value(true);
   }
 }

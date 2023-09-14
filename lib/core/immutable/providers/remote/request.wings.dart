@@ -1,3 +1,5 @@
+import 'package:wings/features/auth/controller/auth.dart';
+
 import '../../../mutable/helpers/phone.info.helper.dart';
 
 class WingsRequest {
@@ -29,6 +31,10 @@ class WingsRequest {
 
   Map<String, dynamic> get header {
     var head = Map<String, dynamic>.from(_header);
+
+    if (Auth().token.isNotEmpty) {
+      head.addAll({"authorization": Auth().token});
+    }
 
     if (WingsDeviceInfo().haveDeviceData) {
       head.addAll(WingsDeviceInfo().deviceInfoRequestHeader);
